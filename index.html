@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>E-Commerce Store</title>
+
+  <style>
+    *{
+      margin:0;
+      padding:0;
+      box-sizing:border-box;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    body{
+      background: #f5f7fa;
+    }
+
+    /* NAVBAR */
+    /* NAVBAR */
+.navbar{
+  position:sticky;
+  top:0;
+  z-index:100;
+  padding:15px 40px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  background:rgb(44, 44, 224);
+  backdrop-filter:blur(10px);
+  box-shadow:0 8px 20px rgba(0,0,0,0.15);
+}
+
+.logo{
+  font-size:26px;
+  font-weight:bold;
+  color:white;
+}
+
+/* SEARCH */
+.search-box{
+  position:relative;
+  width:320px;
+}
+
+.search-box input{
+  width:100%;
+  padding:10px 15px 10px 40px;
+  border-radius:30px;
+  border:none;
+  outline:none;
+  font-size:14px;
+}
+
+.search-icon{
+  position:absolute;
+  top:50%;
+  left:15px;
+  transform:translateY(-50%);
+  font-size:16px;
+  color:#555;
+}
+
+/* LINKS */
+.nav-links a{
+  margin-left:25px;
+  text-decoration:none;
+  color:white;
+  font-weight:500;
+  transition:0.3s;
+}
+
+.nav-links a:hover{
+  color:#ffd43b;
+}
+
+/* MOBILE */
+@media(max-width:900px){
+  .search-box{
+    display:none;
+  }
+}
+
+
+    /* HERO SECTION */
+    .hero{
+      height:calc(100vh - 70px);
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      padding:60px;
+      background: linear-gradient(
+        rgba(13,110,253,0.8),
+        rgba(102,16,242,0.8)
+      ),
+       url(e1.jfif) center/cover;
+      color:white;
+    }
+
+    .hero-content{
+      max-width:500px;
+    }
+
+    .hero-content h1{
+      font-size:48px;
+      margin-bottom:15px;
+    }
+
+    .hero-content p{
+      font-size:18px;
+      margin-bottom:25px;
+      line-height:1.6;
+    }
+
+    .hero-content a{
+      display:inline-block;
+      padding:14px 30px;
+      background:#fff;
+      color:#0d6efd;
+      text-decoration:none;
+      border-radius:30px;
+      font-size:16px;
+      font-weight:bold;
+      transition:0.3s;
+    }
+
+    .hero-content a:hover{
+      background:#e9ecef;
+      transform:translateY(-2px);
+    }
+
+    /* CARD */
+    .hero-card{
+      background:white;
+      color:#333;
+      padding:30px;
+      width:300px;
+      border-radius:15px;
+      box-shadow:0 10px 25px rgba(0,0,0,0.2);
+      text-align:center;
+    }
+
+    .hero-card img{
+      width:100%;
+      border-radius:10px;
+      margin-bottom:15px;
+    }
+
+    .hero-card h3{
+      margin-bottom:10px;
+    }
+
+    .hero-card p{
+      font-size:14px;
+      margin-bottom:15px;
+    }
+
+    .hero-card a{
+      text-decoration:none;
+      color:white;
+      background:#0d6efd;
+      padding:10px 20px;
+      border-radius:20px;
+      display:inline-block;
+      font-size:14px;
+    }
+
+    .hero-card a:hover{
+      background:#084298;
+    }
+
+    /* RESPONSIVE */
+    @media(max-width:900px){
+      .hero{
+        flex-direction:column;
+        text-align:center;
+      }
+      .hero-card{
+        margin-top:30px;
+      }
+    }
+
+  </style>
+</head>
+
+<body>
+
+  <!-- NAVBAR -->
+  <div class="navbar">
+  <div class="logo">ShopEase</div>
+
+  <div class="search-box">
+    <span class="search-icon">🔍</span>
+    <input type="text" placeholder="Search for products...">
+  </div>
+
+  <div class="nav-links">
+    <a href="/">Home</a>
+    <a href="/products">Products</a>
+    <a href="/login">Login</a>
+  </div>
+</div>
+
+
+  <!-- HERO -->
+  <section class="hero">
+
+    <div class="hero-content">
+      <h1>Welcome to ShopEase</h1>
+      <p>
+        Discover the best products at unbeatable prices.  
+        Shop smart, shop fast, shop with confidence.
+      </p>
+      <a href="/products">Shop Now</a>
+    </div>
+
+    <div class="hero-card">
+      <img src="e2.jfif" alt="Product">
+      <h3>Trending Products</h3>
+      <p>Latest collections with premium quality.</p>
+      <a href="/products">View Products</a>
+    </div>
+
+  </section>
+
+</body>
+</html>
