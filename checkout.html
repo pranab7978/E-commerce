@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>ShopEase | Shipping Address</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap" rel="stylesheet">
+    <style>
+        :root { --bg: #0f101a; --card: #1a1b2e; --primary: #6366f1; --accent: #fbbf24; --text: #f8fafc; --border: rgba(255, 255, 255, 0.1); }
+        body { background: var(--bg); color: var(--text); font-family: 'Plus Jakarta Sans', sans-serif; padding: 30px; display: flex; justify-content: center; }
+        
+        .container { width: 100%; max-width: 500px; }
+        .card { background: var(--card); padding: 30px; border-radius: 20px; border: 1px solid var(--border); }
+        
+        h2 { margin-bottom: 20px; color: var(--primary); text-transform: uppercase; letter-spacing: 1px; font-size: 18px; }
+        
+        .form-group { margin-bottom: 15px; }
+        label { display: block; margin-bottom: 8px; font-size: 13px; color: #aaa; }
+        input { 
+            width: 100%; padding: 12px; background: #050505; border: 1px solid var(--border); 
+            border-radius: 8px; color: white; outline: none; transition: 0.3s;
+        }
+        input:focus { border-color: var(--primary); }
+        
+        .row { display: flex; gap: 15px; }
+        .col { flex: 1; }
+
+        .btn-next { width: 100%; background: var(--primary); padding: 15px; border:none; color: white; font-weight: bold; border-radius: 10px; cursor: pointer; margin-top: 20px; }
+        .btn-next:hover { opacity: 0.9; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <a href="cart.html" style="color:#aaa; text-decoration:none; margin-bottom: 20px; display:block;">← Back to Cart</a>
+    
+    <div class="card">
+        <h2>Shipping Details</h2>
+        <form onsubmit="saveAddress(event)">
+            <div class="form-group">
+                <label>Full Name</label>
+                <input type="text" id="fullName" required placeholder="John Doe">
+            </div>
+            
+            <div class="form-group">
+                <label>Phone Number</label>
+                <input type="tel" id="phone" required placeholder="+91 98765 43210">
+            </div>
+
+            <div class="form-group">
+                <label>Address Line 1</label>
+                <input type="text" id="address1" required placeholder="House No, Street">
+            </div>
+
+            <div class="form-group">
+                <label>Address Line 2 (Optional)</label>
+                <input type="text" id="address2" placeholder="Landmark">
+            </div>
+
+            <div class="row">
+                <div class="col form-group">
+                    <label>City</label>
+                    <input type="text" id="city" required placeholder="Mumbai">
+                </div>
+                <div class="col form-group">
+                    <label>Pincode</label>
+                    <input type="number" id="zip" required placeholder="400001">
+                </div>
+            </div>
+
+            <button type="submit" class="btn-next">Continue to Payment</button>
+        </form>
+    </div>
+</div>
+
+<script>
+    // Pre-fill if data exists
+    window.onload = () => {
+        const saved = JSON.parse(localStorage.getItem('shopease_address'));
+        if(saved) {
+            document.getElementById('fullName').value = saved.fullName || '';
+            document.getElementById('phone').value = saved.phone || '';
+            document.getElementById('address1').value = saved.address1 || '';
+            document.getElementById('city').value = saved.city || '';
+            document.getElementById('zip').value = saved.zip || '';
+        }
+    }
+
+    function saveAddress(e) {
+        e.preventDefault();
+        
+        const addressData = {
+            fullName: document.getElementById('fullName').value,
+            phone: document.getElementById('phone').value,
+            address1: document.getElementById('address1').value,
+            city: document.getElementById('city').value,
+            zip: document.getElementById('zip').value
+        };
+
+        // Save to LocalStorage
+        localStorage.setItem('shopease_address', JSON.stringify(addressData));
+        
+        // Go to Payment
+        window.location.href = "payment.html";
+    }
+</script>
+
+</body>
+</html>
