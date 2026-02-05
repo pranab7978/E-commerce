@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ShopEase | Collections</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        :root { --bg: #0f101a; --card: #1a1b2e; --primary: #6366f1; --accent: #fbbf24; --text: #f8fafc; --text-muted: #94a3b8; --border: rgba(255, 255, 255, 0.08); --danger: #ef4444; }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Plus Jakarta Sans', sans-serif; }
+        body { background: var(--bg); color: var(--text); }
+
+        /* NAVBAR WITH SEARCH */
+        .navbar { 
+            padding: 15px 5%; display: flex; justify-content: space-between; align-items: center; 
+            background: rgba(15,16,26,0.95); position: sticky; top: 0; z-index: 100; 
+            border-bottom: 1px solid var(--border); backdrop-filter: blur(12px);
+        }
+        .logo { font-weight: 800; font-size: 24px; color: white; text-decoration: none; }
+        .logo span { color: var(--primary); }
+
+        .nav-right { display: flex; align-items: center; gap: 20px; }
+
+        /* NAV SEARCH BAR */
+        .nav-search {
+            flex: 1; max-width: 400px; margin: 0 20px; position: relative;
+        }
+        .nav-search input {
+            width: 100%; background: #050505; border: 1px solid var(--border);
+            padding: 10px 15px; border-radius: 20px; color: white; outline: none;
+        }
+        .nav-search input:focus { border-color: var(--primary); }
+
+        .cart-wrapper { position: relative; color: white; font-size: 22px; text-decoration: none; }
+        .cart-badge { position: absolute; top: -8px; right: -8px; background: var(--primary); color: white; font-size: 11px; width: 20px; height: 20px; display: flex; justify-content: center; align-items: center; border-radius: 50%; }
+
+        /* LAYOUT & FILTER BUTTON */
+        .container { padding: 20px 5%; max-width: 1600px; margin: 0 auto; }
+        
+        .top-controls { display: flex; justify-content: flex-end; margin-bottom: 20px; }
+        .btn-filter {
+            background: var(--card); border: 1px solid var(--border); color: white;
+            padding: 10px 20px; border-radius: 8px; cursor: pointer; display: flex; gap: 10px; align-items: center;
+        }
+        .btn-filter:hover { border-color: var(--primary); }
+
+        .content-area { display: flex; gap: 30px; position: relative; }
+
+        /* SIDEBAR */
+        .sidebar { 
+            width: 280px; flex-shrink: 0; height: fit-content; 
+            background: var(--card); padding: 25px; border-radius: 16px; border: 1px solid var(--border);
+            display: none; 
+        }
+        .sidebar.show { display: block; animation: slideRight 0.3s ease; }
+        @keyframes slideRight { from { opacity:0; transform: translateX(-20px); } to { opacity:1; transform: translateX(0); } }
+
+        .filter-group { margin-bottom: 25px; border-bottom: 1px solid var(--border); padding-bottom: 20px; }
+        .filter-title { font-size: 13px; font-weight: 700; text-transform: uppercase; margin-bottom: 15px; }
+        .filter-label { display: flex; align-items: center; margin-bottom: 10px; color: var(--text-muted); cursor: pointer; font-size: 14px; }
+        .filter-label input { margin-right: 10px; accent-color: var(--primary); }
+
+        /* GRID */
+        .grid { flex: 1; display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 25px; }
+        
+        .card { background: var(--card); border-radius: 16px; padding: 15px; border: 1px solid var(--border); transition: 0.3s; cursor: pointer; }
+        .card:hover { transform: translateY(-5px); border-color: var(--primary); }
+        .card img { width: 100%; height: 250px; object-fit: cover; border-radius: 12px; margin-bottom: 15px; background: #000; }
+        .card h3 { font-size: 16px; margin-bottom: 5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .card .price { color: var(--accent); font-weight: 700; }
+
+        .empty-state { grid-column: 1 / -1; text-align: center; padding: 50px; color: var(--text-muted); font-size: 18px; }
+
+        /* MODAL */
+        .modal { position: fixed; inset: 0; background: rgba(0,0,0,0.9); display: none; justify-content: center; align-items: center; z-index: 2000; backdrop-filter: blur(5px); }
+        .modal.active { display: flex; }
+        .modal-content { background: var(--card); width: 900px; display: flex; border-radius: 20px; overflow: hidden; border: 1px solid var(--border); max-height: 90vh; }
+        .modal-img { width: 50%; object-fit: cover; background: #000; }
+        .modal-info { width: 50%; padding: 40px; display: flex; flex-direction: column; position: relative; overflow-y: auto; }
+        .close-btn { position: absolute; top: 20px; right: 20px; background: none; border: none; color: white; font-size: 24px; cursor: pointer; }
+
+        .qty-selector { display: flex; align-items: center; gap: 10px; margin: 20px 0; }
+        .qty-btn { width: 30px; height: 30px; background: #333; color: white; border: none; cursor: pointer; border-radius: 5px; }
+        
+        .size-btn {
+            padding: 8px 14px; border: 1px solid #444; background: transparent; color: white;
+            cursor: pointer; border-radius: 6px; transition: 0.2s;
+        }
+        .size-btn:hover { border-color: var(--primary); }
+        .size-btn.selected { 
+            background: var(--primary); border-color: var(--primary); color: white;
+            box-shadow: 0 0 10px rgba(99, 102, 241, 0.4);
+        }
+
+        .btn-buy { background: var(--primary); color: white; padding: 15px; border: none; border-radius: 8px; font-weight: 700; cursor: pointer; margin-top: auto; width: 100%; }
+        .btn-buy:disabled { background: #333; cursor: not-allowed; }
+    </style>
+</head>
+<body>
+
+<nav class="navbar">
+    <a href="index.html" class="logo">SHOP<span>EASE</span>.</a>
+    
+    <div class="nav-search">
+        <input type="text" id="searchInput" placeholder="Search products...">
+    </div>
+
+    <div class="nav-right">
+        <a href="cart.html" class="cart-wrapper">
+            <i class="fa-solid fa-bag-shopping"></i>
+            <div class="cart-badge" id="cartCount">0</div>
+        </a>
+    </div>
+</nav>
+
+<div class="container">
+    <div class="top-controls">
+        <button class="btn-filter" onclick="toggleSidebar()">
+            <i class="fa-solid fa-filter"></i> Filters
+        </button>
+    </div>
+
+    <div class="content-area">
+        <aside class="sidebar" id="sidebar">
+            <div class="filter-group">
+                <div class="filter-title">Price Range</div>
+                <input type="range" id="priceRange" min="0" max="100000" step="500" value="100000" style="width:100%">
+                <div style="display:flex; justify-content:space-between; margin-top:5px; color:var(--accent); font-size:12px;">
+                    <span>₹0</span> <span id="priceValue">₹1,00,000</span>
+                </div>
+            </div>
+
+            <div class="filter-group">
+                <div class="filter-title">Category</div>
+                <label class="filter-label"><input type="checkbox" class="cat-check" value="fashion"> Fashion</label>
+                <label class="filter-label"><input type="checkbox" class="cat-check" value="electronics"> Electronics</label>
+                <label class="filter-label"><input type="checkbox" class="cat-check" value="essentials"> Essentials</label>
+            </div>
+            
+            <div class="filter-group">
+                <div class="filter-title">Gender</div>
+                <label class="filter-label"><input type="checkbox" class="gender-check" value="men"> Men</label>
+                <label class="filter-label"><input type="checkbox" class="gender-check" value="women"> Women</label>
+            </div>
+        </aside>
+
+        <div class="grid" id="productGrid">
+            </div>
+    </div>
+</div>
+
+<div class="modal" id="productModal">
+    <div class="modal-content">
+        <img src="" class="modal-img" id="mImg" onerror="this.src='https://via.placeholder.com/400x500?text=No+Image'">
+        <div class="modal-info">
+            <button class="close-btn" onclick="closeModal()">&times;</button>
+            <h2 id="mTitle" style="margin-bottom:10px;">Title</h2>
+            
+            <div id="mPrice" style="font-size:24px; color:var(--accent); font-weight:700; margin-bottom:20px;">₹0</div>
+            
+            <p id="mDesc" style="color:var(--text-muted); line-height:1.6; margin-bottom:20px;">Desc</p>
+            <p id="mStock" style="font-size:12px; font-weight:bold; margin-bottom:10px;"></p>
+
+            <div id="sizeArea" style="margin-bottom:20px;">
+                <p style="margin-bottom:5px; font-size:12px; text-transform:uppercase; color:var(--text-muted);">Select Size <span style="color:var(--danger)">*</span></p>
+                <div id="sizeOptions" style="display:flex; gap:10px; flex-wrap:wrap;"></div>
+            </div>
+
+            <div class="qty-selector">
+                <button class="qty-btn" onclick="adjustQty(-1)">-</button>
+                <span id="qtyVal" style="font-weight:bold; width:30px; text-align:center;">1</span>
+                <button class="qty-btn" onclick="adjustQty(1)">+</button>
+            </div>
+
+            <button class="btn-buy" id="buyBtn" onclick="addToCart()">Add to Cart</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    let allProducts = [];
+    let currentProduct = null;
+    let currentQty = 1;
+    let selectedSize = null;
+
+    window.onload = () => {
+        fetchProducts();
+        updateCartCount();
+        
+        document.getElementById('searchInput').addEventListener('input', applyFilters);
+        document.getElementById('priceRange').addEventListener('input', (e) => {
+            document.getElementById('priceValue').innerText = `₹${parseInt(e.target.value).toLocaleString()}`;
+            applyFilters();
+        });
+        document.querySelectorAll('.cat-check, .gender-check').forEach(c => c.addEventListener('change', applyFilters));
+    };
+
+    function toggleSidebar() {
+        document.getElementById('sidebar').classList.toggle('show');
+    }
+
+    async function fetchProducts() {
+        const grid = document.getElementById('productGrid');
+        grid.innerHTML = '<div class="empty-state">Loading products...</div>';
+
+        try {
+            const res = await fetch('http://localhost:8080/api/admin/all');
+            
+            if (!res.ok) throw new Error("Failed to connect to backend");
+
+            allProducts = await res.json();
+            
+            if (allProducts.length === 0) {
+                grid.innerHTML = '<div class="empty-state">No products found. Please add products from Admin Panel.</div>';
+                return;
+            }
+
+            renderGrid(allProducts);
+        } catch(e) { 
+            console.error(e); 
+            grid.innerHTML = '<div class="empty-state" style="color:var(--danger)">Error loading products. Is the backend running?</div>';
+        }
+    }
+
+    function renderGrid(products) {
+        const grid = document.getElementById('productGrid');
+        if (products.length === 0) {
+            grid.innerHTML = '<div class="empty-state">No products match your filters.</div>';
+            return;
+        }
+
+        // IMPROVED: Use index for openModal to avoid special character errors
+        grid.innerHTML = products.map((p, index) => `
+            <div class="card" onclick="openModal(${index})">
+                <img src="${p.images[0] || ''}" onerror="this.src='https://via.placeholder.com/300x300?text=No+Image'">
+                <h3>${p.title}</h3>
+                <div class="price">₹${p.price.toLocaleString()}</div>
+            </div>
+        `).join('');
+    }
+
+    function applyFilters() {
+        const term = document.getElementById('searchInput').value.toLowerCase();
+        const maxPrice = document.getElementById('priceRange').value;
+        const cats = Array.from(document.querySelectorAll('.cat-check:checked')).map(c => c.value);
+        const gender = Array.from(document.querySelectorAll('.gender-check:checked')).map(c => c.value);
+        
+        const filtered = allProducts.filter(p => {
+            const pGender = p.gender ? p.gender.toLowerCase() : 'unisex';
+            return p.title.toLowerCase().includes(term) && 
+                   p.price <= maxPrice &&
+                   (cats.length === 0 || cats.includes(p.category.toLowerCase())) &&
+                   (gender.length === 0 || gender.includes(pGender));
+        });
+        renderGrid(filtered);
+    }
+
+    // MODIFIED: Accepts index instead of object
+    function openModal(index) {
+        // Look up the full product object from the array
+        const p = allProducts[index]; 
+        
+        currentProduct = p;
+        currentQty = 1;
+        selectedSize = null;
+        
+        document.getElementById('mImg').src = (p.images && p.images.length > 0) ? p.images[0] : 'https://via.placeholder.com/400x500?text=No+Image';
+        document.getElementById('mTitle').innerText = p.title;
+        document.getElementById('mDesc').innerText = p.description || "No description available";
+        document.getElementById('mStock').innerText = p.stock > 0 ? `In Stock: ${p.stock}` : "Out of Stock";
+        document.getElementById('qtyVal').innerText = "1";
+        
+        // Render Sizes
+        const sizeBox = document.getElementById('sizeOptions');
+        sizeBox.innerHTML = '';
+        
+        if(p.sizes && p.sizes.length > 0) {
+            document.getElementById('sizeArea').style.display = 'block';
+            p.sizes.forEach(s => {
+                const btn = document.createElement('button');
+                btn.className = 'size-btn';
+                btn.innerText = s;
+                btn.onclick = () => { 
+                    selectedSize = s; 
+                    Array.from(sizeBox.children).forEach(c => c.classList.remove('selected'));
+                    btn.classList.add('selected');
+                };
+                sizeBox.appendChild(btn);
+            });
+        } else {
+            document.getElementById('sizeArea').style.display = 'none';
+            selectedSize = 'Standard'; 
+        }
+
+        updatePriceDisplay();
+        
+        const buyBtn = document.getElementById('buyBtn');
+        if (p.stock <= 0) {
+            buyBtn.disabled = true;
+            buyBtn.innerText = "Sold Out";
+            buyBtn.style.background = "#333";
+        } else {
+            buyBtn.disabled = false;
+            buyBtn.innerText = "Add to Cart";
+            buyBtn.style.background = "var(--primary)";
+        }
+        
+        document.getElementById('productModal').classList.add('active');
+    }
+
+    function adjustQty(n) {
+        if(!currentProduct) return;
+        const newQ = currentQty + n;
+        if(newQ >= 1 && newQ <= currentProduct.stock) {
+            currentQty = newQ;
+            document.getElementById('qtyVal').innerText = currentQty;
+            updatePriceDisplay();
+        }
+    }
+
+    function updatePriceDisplay() {
+        if(!currentProduct) return;
+        const total = currentProduct.price * currentQty;
+        document.getElementById('mPrice').innerText = `₹${total.toLocaleString()}`;
+    }
+
+    function closeModal() { document.getElementById('productModal').classList.remove('active'); }
+
+    function addToCart() {
+        if(!currentProduct) return;
+        
+        if(document.getElementById('sizeArea').style.display !== 'none' && !selectedSize) {
+            alert("⚠️ Please select a size to continue!");
+            return; 
+        }
+
+        let cart = JSON.parse(localStorage.getItem('shopease_cart')) || [];
+        
+        const existingItem = cart.find(item => item.id === currentProduct.id && item.selectedSize === selectedSize);
+
+        if (existingItem) {
+            if (existingItem.quantity + currentQty <= currentProduct.stock) {
+                existingItem.quantity += currentQty;
+            } else {
+                alert("Cannot add more than available stock!");
+                return;
+            }
+        } else {
+            cart.push({
+                id: currentProduct.id,
+                title: currentProduct.title,
+                price: currentProduct.price,
+                quantity: currentQty,
+                image: (currentProduct.images && currentProduct.images.length > 0) ? currentProduct.images[0] : '',
+                selectedSize: selectedSize
+            });
+        }
+        
+        localStorage.setItem('shopease_cart', JSON.stringify(cart));
+        updateCartCount();
+        closeModal();
+        alert("✅ Added to cart successfully!");
+    }
+
+    function updateCartCount() {
+        const cart = JSON.parse(localStorage.getItem('shopease_cart')) || [];
+        document.getElementById('cartCount').innerText = cart.length;
+    }
+</script>
+</body>
+</html>
