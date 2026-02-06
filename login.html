@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ShopEase | Secure Access</title>
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+    <style>
+        :root {
+            --bg-dark: #0f101a;
+            --bg-card: rgba(26, 27, 46, 0.7);
+            --accent-gold: #fbbf24;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
+
+        body {
+            background-color: var(--bg-dark);
+            background-image: radial-gradient(circle at 20% 30%, rgba(139, 92, 246, 0.15) 0%, transparent 40%);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            color: var(--text-main);
+        }
+
+        .navbar { padding: 20px 8%; border-bottom: 1px solid rgba(255, 255, 255, 0.05); }
+        .navbar a { color: var(--text-main); text-decoration: none; font-size: 13px; text-transform: uppercase; letter-spacing: 1px; }
+
+        .container { flex: 1; display: flex; justify-content: center; align-items: center; padding: 20px; }
+
+        .card {
+            background: var(--bg-card);
+            backdrop-filter: blur(20px);
+            width: 100%;
+            max-width: 420px;
+            padding: 40px;
+            border-radius: 28px;
+            border: 1px solid rgba(251, 191, 36, 0.2);
+            text-align: center;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+        }
+
+        h2 { font-size: 28px; margin-bottom: 8px; color: var(--accent-gold); }
+        p.subtitle { color: var(--text-muted); font-size: 14px; margin-bottom: 20px; }
+
+        form { display: flex; flex-direction: column; gap: 18px; margin-top: 20px; }
+        .input-group { position: relative; width: 100%; }
+
+        input, select {
+            width: 100%;
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 14px 18px;
+            border-radius: 12px;
+            color: white;
+            outline: none;
+            transition: 0.3s;
+        }
+
+        select option { background: #1a1b2e; color: white; }
+        input:focus, select:focus { border-color: var(--accent-gold); background: rgba(0, 0, 0, 0.5); }
+
+        .toggle-password {
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            cursor: pointer;
+            color: var(--text-muted);
+            font-size: 18px;
+        }
+
+        .btn {
+            padding: 15px;
+            background: var(--accent-gold);
+            color: #000;
+            border: none;
+            border-radius: 12px;
+            font-weight: 700;
+            cursor: pointer;
+            text-transform: uppercase;
+            transition: 0.3s;
+        }
+
+        .btn:hover { transform: translateY(-2px); box-shadow: 0 10px 15px -3px rgba(251, 191, 36, 0.3); }
+
+        #status-msg { margin-bottom: 20px; font-size: 13px; padding: 12px; border-radius: 10px; display: none; }
+        .toggle-link { margin-top: 20px; font-size: 13px; color: var(--text-muted); }
+        .toggle-link span { color: var(--accent-gold); cursor: pointer; font-weight: 600; }
+        .hidden { display: none; }
+    </style>
+</head>
+<body>
+    <nav class="navbar"><a href="index.html">← Back to Home</a></nav>
+    
+    <div class="container">
+        <div class="card">
+            <h2 id="formTitle">Welcome Back</h2>
+            <p class="subtitle" id="formSubtitle">Access your ShopEase account</p>
+            
+            <div id="status-msg"></div>
+
+            <form id="loginForm">
+                <select id="loginRole">
+                    <option value="USER">Customer Login</option>
+                    <option value="ADMIN">Admin Portal</option>
+                </select>
+
+                <input type="email" id="loginEmail" placeholder="Email Address" required>
+                <div class="input-group">
+                    <input type="password" id="loginPass" placeholder="Password" required style="padding-right: 45px;">
+                    <span class="toggle-password" onclick="toggleVisibility('loginPass')">👁️</span>
+                </div>
+                <button type="submit" class="btn" id="loginBtn">Login</button>
+            </form>
+
+            <form id="signupForm" class="hidden">
+                <input type="text" id="regName" placeholder="Full Name" required>
+                <input type="email" id="regEmail" placeholder="Email Address" required>
+                <div class="input-group">
+                    <input type="password" id="regPass" placeholder="Create Password" required style="padding-right: 45px;">
+                    <span class="toggle-password" onclick="toggleVisibility('regPass')">👁️</span>
+                </div>
+                <button type="submit" class="btn" id="signupBtn">Create Account</button>
+            </form>
+
+            <p class="toggle-link" id="toggleText">
+                Don't have an account? <span onclick="switchForm('signup')">Sign Up</span>
+            </p>
+
+            <div id="forgotWrapper">
+                <p style="margin-top: 15px;">
+                    <a href="#" onclick="toggleForgot()" style="color:var(--text-muted); font-size:12px; text-decoration:none;">Forgot Password?</a>
+                </p>
+                <div id="forgotSection" class="hidden" style="margin-top: 20px; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 20px;">
+                    <input type="email" id="resetEmail" placeholder="Enter email for reset link">
+                    <button type="button" class="btn" style="width:100%; margin-top:10px; padding:10px;" onclick="handleReset()">Reset</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    
+
+    <script>
+        const loginForm = document.getElementById('loginForm');
+        const signupForm = document.getElementById('signupForm');
+        const statusMsg = document.getElementById('status-msg');
+        const forgotWrapper = document.getElementById('forgotWrapper');
+
+        function showStatus(text, isError = true) {
+            statusMsg.innerText = text;
+            statusMsg.style.display = 'block';
+            statusMsg.style.backgroundColor = isError ? 'rgba(239, 68, 68, 0.1)' : 'rgba(34, 197, 94, 0.1)';
+            statusMsg.style.color = isError ? '#ef4444' : '#22c55e';
+        }
+
+        function toggleVisibility(id) {
+            const input = document.getElementById(id);
+            const icon = input.nextElementSibling;
+            if (input.type === "password") {
+                input.type = "text";
+                icon.innerText = "🔒";
+            } else {
+                input.type = "password";
+                icon.innerText = "👁️";
+            }
+        }
+
+        function switchForm(type) {
+            statusMsg.style.display = 'none';
+            loginForm.reset();   
+            signupForm.reset();  
+            if (type === 'signup') {
+                document.getElementById('formTitle').innerText = "Join ShopEase";
+                document.getElementById('formSubtitle').innerText = "Start your premium shopping journey";
+                loginForm.classList.add('hidden');
+                signupForm.classList.remove('hidden');
+                forgotWrapper.classList.add('hidden'); 
+                document.getElementById('toggleText').innerHTML = 'Already have an account? <span onclick="switchForm(\'login\')">Login</span>';
+            } else {
+                document.getElementById('formTitle').innerText = "Welcome Back";
+                document.getElementById('formSubtitle').innerText = "Access your ShopEase account";
+                signupForm.classList.add('hidden');
+                loginForm.classList.remove('hidden');
+                forgotWrapper.classList.remove('hidden'); 
+                document.getElementById('toggleText').innerHTML = 'Don\'t have an account? <span onclick="switchForm(\'signup\')">Sign Up</span>';
+            }
+        }
+
+        // --- CORE LOGIN LOGIC ---
+        loginForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const role = document.getElementById('loginRole').value;
+            const email = document.getElementById('loginEmail').value;
+            const pass = document.getElementById('loginPass').value;
+            const loginBtn = document.getElementById('loginBtn');
+
+            loginBtn.innerText = "Verifying...";
+            loginBtn.disabled = true;
+
+            // 1. ADMIN GATEKEEPER
+            if (role === "ADMIN") {
+                if (email === "admin@shopease.com" && pass === "admin123") {
+                    // Set the session key that admin.html checks for
+                    localStorage.setItem('shopease_session', 'admin_active');
+                    showStatus("Admin Verified! Redirecting...", false);
+                    setTimeout(() => window.location.href = "admin.html", 1000);
+                } else {
+                    showStatus("❌ Invalid Admin Credentials");
+                    loginBtn.innerText = "Login";
+                    loginBtn.disabled = false;
+                }
+                return;
+            }
+
+            // 2. USER LOGIN (via Spring Boot API)
+            try {
+                const response = await fetch('http://localhost:8080/api/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email, password: pass })
+                });
+
+                const result = await response.json();
+
+                if (response.ok && result.message === "Login Success") {
+                    localStorage.setItem('shopease_session', 'user_active');
+                    localStorage.setItem('shopease_user', JSON.stringify(result));
+                    showStatus("Login Successful! Redirecting...", false);
+                    setTimeout(() => window.location.href = "index.html", 1500);
+                } else {
+                    showStatus(result.message || "Invalid Email or Password");
+                }
+            } catch (err) { 
+                showStatus("⚠️ Server unreachable. Is Spring Boot running?"); 
+            } finally {
+                loginBtn.innerText = "Login";
+                loginBtn.disabled = false;
+            }
+        });
+
+        // REGISTRATION LOGIC
+        signupForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const signupBtn = document.getElementById('signupBtn');
+            signupBtn.innerText = "Creating...";
+            signupBtn.disabled = true;
+
+            try {
+                const response = await fetch('http://localhost:8080/api/register', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        name: document.getElementById('regName').value,
+                        email: document.getElementById('regEmail').value,
+                        password: document.getElementById('regPass').value
+                    })
+                });
+
+                if (response.ok) {
+                    showStatus("Account created! Please Login.", false);
+                    signupForm.reset();
+                    setTimeout(() => switchForm('login'), 2000);
+                } else {
+                    const result = await response.json();
+                    showStatus(result.message || "Registration failed.");
+                }
+            } catch (err) { 
+                showStatus("Connection error."); 
+            } finally {
+                signupBtn.innerText = "Create Account";
+                signupBtn.disabled = false;
+            }
+        });
+
+        function toggleForgot() {
+            document.getElementById('forgotSection').classList.toggle('hidden');
+        }
+
+        async function handleReset() {
+            const email = document.getElementById('resetEmail').value;
+            if(!email) return showStatus("Enter email address.");
+            showStatus("Reset link sent (simulation)", false);
+            document.getElementById('resetEmail').value = "";
+        }
+    </script>
+</body>
+</html>
